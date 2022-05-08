@@ -1,20 +1,3 @@
-/*  MCP23017 library for Arduino
-    Copyright (C) 2009 David Pye    <davidmpye@gmail.com
-    Modified for use on the MBED ARM platform
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 
 #include "MCP23017.h"
 #include "mbed.h"
@@ -27,8 +10,8 @@ union {
 /*-----------------------------------------------------------------------------
  *
  */
-MCP23017::MCP23017(PinName sda, PinName scl, int i2cAddress)  : _i2c(sda, scl) {
-    MCP23017_i2cAddress = i2cAddress;
+MCP23017::MCP23017(const uint8_t addr, I2C &i2c)
+    : MCP23017_i2cAddress(addr << 1), _i2c(&i2c) {
     reset();                                  // initialise chip to power-on condition
 }
 
@@ -120,7 +103,7 @@ void MCP23017::writeRegister(int regAddress, unsigned char data) {
 
     buffer[0] = regAddress;
     buffer[1] = data;
-    _i2c.write(MCP23017_i2cAddress, buffer, 2);
+    _i2c->write(MCP23017_i2cAddress, buffer, 2);
 }
 
 /*----------------------------------------------------------------------------
@@ -135,7 +118,7 @@ void MCP23017::writeRegister(int regAddress, unsigned short data) {
     buffer[1] = tmp_data.value8[0];
     buffer[2] = tmp_data.value8[1];
 
-    _i2c.write(MCP23017_i2cAddress, buffer, 3);
+    _i2c->write(MCP23017_i2cAddress, buffer, 3);
 }
 
 /*-----------------------------------------------------------------------------
@@ -145,8 +128,8 @@ int MCP23017::readRegister(int regAddress) {
     char buffer[2];
 
     buffer[0] = regAddress;
-    _i2c.write(MCP23017_i2cAddress, buffer, 1);
-    _i2c.read(MCP23017_i2cAddress, buffer, 2);
+    _i2c->write(MCP23017_i2cAddress, buffer, 1);
+    _i2c->read(MCP23017_i2cAddress, buffer, 2);
 
     return ((int)(buffer[0] + (buffer[1]<<8)));
 }

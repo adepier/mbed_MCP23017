@@ -1,6 +1,7 @@
 /*  MCP23017 library for Arduino
     Copyright (C) 2009 David Pye    <davidmpye@gmail.com
     Modified for use on the MBED ARM platform
+    forked from https://os.mbed.com/users/jimherd/code/MCP23017/
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -61,7 +62,7 @@ public:
      * @param   scl         I2C clock pin
      * @param   i2cAddress  I2C address
      */
-    MCP23017(PinName sda, PinName scl, int i2cAddress);
+    MCP23017(const uint8_t addr, I2C &i2c);
 
     /** Reset MCP23017 device to its power-on state
      */    
@@ -132,10 +133,10 @@ public:
     void internalPullupMask(unsigned short mask);
     int read(void);
     void write(int data);
-
-protected:
-    I2C     _i2c;
-    int     MCP23017_i2cAddress;                        // physical I2C address
+private:
+  uint8_t MCP23017_i2cAddress;// physical I2C address         
+  I2C *_i2c;               
+ protected:
     unsigned short   shadow_GPIO, shadow_IODIR, shadow_GPPU, shadow_IPOL;     // Cached copies of the register values
     
 };
